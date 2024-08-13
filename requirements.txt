@@ -4,3 +4,4 @@ pydantic
 starlette
 motor
 bson
+black
