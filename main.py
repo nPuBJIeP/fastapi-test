@@ -1,61 +1,33 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+# from fastapi import FastAPI
+# from motor.motor_asyncio import AsyncIOMotorClient
+# from app.apis.user.routes import router as user_router
+#
+# app = FastAPI()
+#
+#
+# app.include_router(user_router)
+#
+# db_client = AsyncIOMotorClient("mongodb://localhost:27017")
+# db = db_client.user_balance_db
+# app.state.db = db
+
+
+from fastapi import FastAPI
 from motor.motor_asyncio import AsyncIOMotorClient
-from bson import ObjectId
-from typing_extensions import List
+from app.apis.user.routes import router as user_router
 
 app = FastAPI()
 
-# Конфигурация базы данных
-db_client = AsyncIOMotorClient("mongodb://localhost:27017")
-db = db_client.user_balance_db
+app.mongodb_client = AsyncIOMotorClient("mongodb://localhost:27017")
+# @app.on_event("startup")
+# async def startup_db_client():
+#     app.mongodb_client = AsyncIOMotorClient("mongodb://localhost:27017")
+#     app.mongodb = app.mongodb_client['user_database']  # Имя вашей базы данных
+#
+#
+# @app.on_event("shutdown")
+# async def shutdown_db_client():
+#     app.mongodb_client.close()
 
 
-class BalanceTransferRequest(BaseModel):
-    from_user_id: str
-    to_user_id: str
-    amount: float
-
-
-class BalanceAddRequest(BaseModel):
-    user_id: str
-    amount: float
-
-
-class BalanceWithdrawRequest(BaseModel):
-    user_id: str
-    amount: float
-
-
-class CreateUserRequest(BaseModel):
-    user_id: str
-    amount: float
-
-
-@app.post("/users/")
-async def create_user(data: CreateUserRequest):
-    new_user = {"user_id": data.user_id, "balance": data.balance}
-    await db.balances.insert_one(new_user)
-    return {"success"}
-
-
-@app.get("/users/{user_id}")
-async def get_user(user_id: str):
-    user = {"user_id": user_id}
-    await db.balances.find_one(user)
-    return {"success"}
-
-
-@app.post("/balance/add")
-async def add_balance(data: BalanceAddRequest):
-    pass
-
-
-@app.post("/balance/withdraw")
-async def add_balance(data: BalanceWithdrawRequest):
-    pass
-
-
-@app.post("/balance/transfer")
-async def add_balance(data: BalanceTransferRequest):
-    pass
+app.include_router(user_router)
