@@ -1,33 +1,43 @@
-# from fastapi import FastAPI
-# from motor.motor_asyncio import AsyncIOMotorClient
-# from app.apis.user.routes import router as user_router
-#
-# app = FastAPI()
-#
-#
-# app.include_router(user_router)
-#
-# db_client = AsyncIOMotorClient("mongodb://localhost:27017")
-# db = db_client.user_balance_db
-# app.state.db = db
-
-
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Depends
+from pydantic import BaseModel, Field
 from motor.motor_asyncio import AsyncIOMotorClient
-from app.apis.user.routes import router as user_router
+from typing_extensions import List
+
+from app.entity import User
+from app.schemas import UserResponse, CreateUserRequest, BalanceAddRequest
+from app.service import UserService
 
 app = FastAPI()
 
-app.mongodb_client = AsyncIOMotorClient("mongodb://localhost:27017")
-# @app.on_event("startup")
-# async def startup_db_client():
-#     app.mongodb_client = AsyncIOMotorClient("mongodb://localhost:27017")
-#     app.mongodb = app.mongodb_client['user_database']  # Имя вашей базы данных
-#
-#
-# @app.on_event("shutdown")
-# async def shutdown_db_client():
-#     app.mongodb_client.close()
+
+@app.post("/users/", response_model=UserResponse)
+async def create_user(data: CreateUserRequest, user_service: UserService = Depends()):
+    new_user = User(user_id=data.user_id, balance=data.balance)
+    # try:
+    await user_service.create_user(new_user)
+    return UserResponse(user_id=data.user_id, balance=data.balance)
+    # except Exception:
+    #     raise HTTPException(status_code=500, detail="Database exception.")
 
 
-app.include_router(user_router)
+@app.get("/users/{user_id}", response_model=UserResponse)
+async def get_user(user_id: int, user_service: UserService = Depends()):
+    user = await user_service.get_user(user_id)
+    return user
+
+
+#
+@app.post("/balance/add", response_model=UserResponse)
+async def add_balance(data: BalanceAddRequest, user_service: UserService = Depends()):
+    print('add balance')
+    user = await user_service.add_founds(data)
+    return user
+#
+# @app.post("/balance/withdraw")
+# async def add_balance(data: BalanceWithdrawRequest):
+#     pass
+#
+#
+# @app.post("/balance/transfer")
+# async def add_balance(data: BalanceTransferRequest):
+#     pass
