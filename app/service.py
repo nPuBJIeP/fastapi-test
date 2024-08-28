@@ -12,8 +12,6 @@ class UserService:
         self.user_repo = user_repo
 
     async def create_user(self, user: User):
-        # todo check user exists
-        # user_exists = await self.user_repo.user_exists(user)
         return await self.user_repo.create_user(user)
 
     async def get_user(self, user_id: int):

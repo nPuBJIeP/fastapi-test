@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, Depends
-
+from fastapi import status
 from app.errors.exceptions import UserExistsError, NotFoundError
 from app.entity import User
 from app.schemas import UserResponse, CreateUserRequest, BalanceAddRequest
@@ -7,7 +7,7 @@ from app.service import UserService
 import logging
 
 app = FastAPI()
-logger = logging.getLogger("test")
+logger = logging.getLogger("app")
 
 
 @app.post("/users/", response_model=UserResponse)
@@ -17,10 +17,10 @@ async def create_user(data: CreateUserRequest, user_service: UserService = Depen
         await user_service.create_user(new_user)
         return UserResponse(user_id=data.user_id, balance=data.balance)
     except UserExistsError as e:
-        raise HTTPException(status_code=400, detail=e.message)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
     except Exception as err:
         logger.exception(err)
-        raise HTTPException(status_code=500, detail="Internal error")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal error")
 
 
 @app.get("/users/{user_id}", response_model=UserResponse)
@@ -29,18 +29,18 @@ async def get_user(user_id: int, user_service: UserService = Depends()):
         user = await user_service.get_user(user_id)
         return UserResponse(user_id=user.id, balance=user.balance)
     except NotFoundError as e:
-        raise HTTPException(status_code=404, detail=e.message)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)
     except Exception as err:
         logger.exception(err)
-        raise HTTPException(status_code=500, detail="Internal error")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal error")
 
 
 #
-@app.post("/balance/add", response_model=UserResponse)
-async def add_balance(data: BalanceAddRequest, user_service: UserService = Depends()):
-    print('add balance')
-    user = await user_service.add_balance(data)
-    return user
+# @app.post("/balance/add", response_model=UserResponse)
+# async def add_balance(data: BalanceAddRequest, user_service: UserService = Depends()):
+#     print('add balance')
+#     user = await user_service.add_balance(data)
+#     return user
 #
 # @app.post("/balance/withdraw")
 # async def add_balance(data: BalanceWithdrawRequest):
