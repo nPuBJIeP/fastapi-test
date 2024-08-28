@@ -1,36 +1,45 @@
 from fastapi import FastAPI, HTTPException, Depends
-from pydantic import BaseModel, Field
-from motor.motor_asyncio import AsyncIOMotorClient
-from typing_extensions import List
 
+from app.errors.exceptions import UserExistsError, NotFoundError
 from app.entity import User
 from app.schemas import UserResponse, CreateUserRequest, BalanceAddRequest
 from app.service import UserService
+import logging
 
 app = FastAPI()
+logger = logging.getLogger("test")
 
 
 @app.post("/users/", response_model=UserResponse)
 async def create_user(data: CreateUserRequest, user_service: UserService = Depends()):
     new_user = User(user_id=data.user_id, balance=data.balance)
-    # try:
-    await user_service.create_user(new_user)
-    return UserResponse(user_id=data.user_id, balance=data.balance)
-    # except Exception:
-    #     raise HTTPException(status_code=500, detail="Database exception.")
+    try:
+        await user_service.create_user(new_user)
+        return UserResponse(user_id=data.user_id, balance=data.balance)
+    except UserExistsError as e:
+        raise HTTPException(status_code=400, detail=e.message)
+    except Exception as err:
+        logger.exception(err)
+        raise HTTPException(status_code=500, detail="Internal error")
 
 
 @app.get("/users/{user_id}", response_model=UserResponse)
 async def get_user(user_id: int, user_service: UserService = Depends()):
-    user = await user_service.get_user(user_id)
-    return user
+    try:
+        user = await user_service.get_user(user_id)
+        return UserResponse(user_id=user.id, balance=user.balance)
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail=e.message)
+    except Exception as err:
+        logger.exception(err)
+        raise HTTPException(status_code=500, detail="Internal error")
 
 
 #
 @app.post("/balance/add", response_model=UserResponse)
 async def add_balance(data: BalanceAddRequest, user_service: UserService = Depends()):
     print('add balance')
-    user = await user_service.add_founds(data)
+    user = await user_service.add_balance(data)
     return user
 #
 # @app.post("/balance/withdraw")

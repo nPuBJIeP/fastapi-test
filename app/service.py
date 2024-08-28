@@ -19,5 +19,5 @@ class UserService:
     async def get_user(self, user_id: int):
         return await self.user_repo.get_user(user_id)
 
-    async def add_founds(self, data: BalanceAddRequest):
-        return await self.user_repo.add_founds(data)
+    async def add_balance(self, data: BalanceAddRequest):
+        return await self.user_repo.add_balance(data)
