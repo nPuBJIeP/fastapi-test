@@ -1,6 +1,5 @@
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
-from pymongo.collection import Collection
 
 from app.depends import get_mongodb_client
 from app.entity import User, BalanceAdd, BalanceWithdraw, BalanceTransfer

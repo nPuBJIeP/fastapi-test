@@ -7,7 +7,8 @@
 - [ ] разделить UserService на UserService и BalanceService
 - [ ] завести сервисные модели для BalanceService
 - [ ] вынести всю логику из репозитория в сервисы
-- [ ] поменять amount float на decimal
+- [ ] прочитать https://learnpython.com/blog/count-money-python/
+- [ ] поменять amount float на decimal (в запросах принимать строки с точностью до [сотых](https://stackoverflow.com/questions/35709595/why-would-you-use-a-string-in-json-to-represent-a-decimal-number), в ответах возвращать с точностью до сотых (100.00))
 - [ ] поменять data на что-то осмысленное в репозитории
 - [ ] добавить Docker, Docker Compose 
 - [ ] добавить отправку в kafka при изменении баланса 

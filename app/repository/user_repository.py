@@ -3,8 +3,8 @@ from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pymongo.collection import Collection
 
 from app.depends import get_mongodb_client
-from app.entity import User, BalanceAdd, BalanceWithdraw, BalanceTransfer
-from app.errors.exceptions import UserNotFoundError, UserExistsError, InsufficientFundsError, DataBaseError
+from app.entity import User
+from app.errors.exceptions import UserNotFoundError, UserExistsError
 
 
 class UserMongoRepository:

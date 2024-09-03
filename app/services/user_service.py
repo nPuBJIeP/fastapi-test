@@ -1,9 +1,7 @@
 from fastapi import Depends
 
 from app.entity import User
-from app.repository.balance_repository import BalanceMongoRepository
 from app.repository.user_repository import UserMongoRepository
-from app.schemas import BalanceAddRequest, BalanceWithdrawRequest, BalanceTransferRequest
 
 
 class UserService:
