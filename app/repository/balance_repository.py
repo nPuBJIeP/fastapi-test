@@ -1,33 +1,17 @@
 from fastapi import Depends, HTTPException
-from motor.motor_asyncio import AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from pymongo.collection import Collection
 
 from app.depends import get_mongodb_client
 from app.entity import User, BalanceAdd, BalanceWithdraw, BalanceTransfer
 from app.errors.exceptions import UserNotFoundError, UserExistsError, InsufficientFundsError, DataBaseError
 
 
-class UserMongoRepository:
+class BalanceMongoRepository:
     db: AsyncIOMotorClient
 
     def __init__(self, db: AsyncIOMotorClient = Depends(get_mongodb_client)) -> None:
-        self.db = db.user_balance_db
-
-    async def create_user(self, user: User):
-        exists_user = await self.db.balances.find_one({"user_id": user.id})
-
-        if exists_user:
-            raise UserExistsError()
-
-        db_user = {"user_id": user.id, "balance": user.balance}
-        await self.db.balances.insert_one(db_user)
-        response_user = User(user_id=user.id, balance=user.balance)
-        return response_user
-
-    async def get_user(self, user_id: int):
-        user = await self.db.balances.find_one({"user_id": user_id})
-        if user is None:
-            raise UserNotFoundError()
-        return User(user_id=user['user_id'], balance=user['balance'])
+        self.db: AsyncIOMotorDatabase = db.user_balance_db
 
     async def add_balance(self, data: BalanceAdd):
         user = await self.db.balances.find_one({"user_id": data.user_id})
@@ -63,7 +47,7 @@ class UserMongoRepository:
         try:
             await self.db.balances.update_one({'user_id': data.from_user_id}, {'$inc': {'balance': -data.amount}})
         except Exception:
-            raise DataBaseError()#хз какую ошибку вернуть
+            raise DataBaseError()  # хз какую ошибку вернуть
         try:
             await self.db.balances.update_one({'user_id': data.to_user_id}, {'$inc': {'balance': data.amount}})
         except Exception:
@@ -74,3 +58,6 @@ class UserMongoRepository:
         upd_to_user = await self.db.balances.find_one({'user_id': data.to_user_id})
         return [User(user_id=upd_from_user['user_id'], balance=upd_from_user['balance']),
                 User(user_id=upd_to_user['user_id'], balance=upd_to_user['balance'])]
+
+    async def delete_user(self, user_id) -> None:
+        await self.db.balances.delete_one({'user_id': user_id})

@@ -1,7 +1,8 @@
 from fastapi import Depends
 
 from app.entity import User
-from app.repository import UserMongoRepository
+from app.repository.balance_repository import BalanceMongoRepository
+from app.repository.user_repository import UserMongoRepository
 from app.schemas import BalanceAddRequest, BalanceWithdrawRequest, BalanceTransferRequest
 
 
@@ -17,13 +18,5 @@ class UserService:
     async def get_user(self, user_id: int):
         return await self.user_repo.get_user(user_id)
 
-    async def add_balance(self, data: BalanceAddRequest):
-        return await self.user_repo.add_balance(data)
-
-    async def withdraw_balance(self, data: BalanceWithdrawRequest):
-
-        return await self.user_repo.withdraw_balance(data)
-
-    async def transfer_balance(self, data: BalanceTransferRequest):
-        # from_user = await self.user_repo.get_user()
-        return await self.user_repo.transfer_balance(data)
+    async def delete_user(self, user_id: int) -> None:
+        return await self.user_repo.delete_user(user_id)

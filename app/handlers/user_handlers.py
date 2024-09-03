@@ -6,7 +6,6 @@ import logging
 from app.schemas import UserResponse, CreateUserRequest
 from app.services.user_service import UserService
 
-
 user_router = APIRouter(route_class=ErrorHandler)
 logger = logging.getLogger("app")
 
@@ -24,3 +23,6 @@ async def get_user(user_id: int, user_service: UserService = Depends()):
     return UserResponse(user_id=user.id, balance=user.balance)
 
 
+@user_router.delete("/users/{user_id}", status_code=200)
+async def delete_user(user_id: int, user_service: UserService = Depends()):
+    await user_service.delete_user(user_id)

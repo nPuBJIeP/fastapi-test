@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter
 
-from app.handlers.user import user_router
-from app.handlers.balance import balance_router
+from app.handlers.user_handlers import user_router
+from app.handlers.balance_handlers import balance_router
 
 app = FastAPI()
 

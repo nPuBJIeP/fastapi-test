@@ -22,7 +22,7 @@ class ErrorHandler(APIRoute):
             except UserNotFoundError as e:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)
             except InsufficientFundsError as e:
-                raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=e.message)
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
             except Exception as err:
                 logger.exception(err)
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal error")

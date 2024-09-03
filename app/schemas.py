@@ -27,6 +27,6 @@ class UserResponse(BaseModel):
     balance: float
 
 
-class TransferResponse(BaseModel):
+class BalanceTransferResponse(BaseModel):
     sender: UserResponse
     recipient: UserResponse
