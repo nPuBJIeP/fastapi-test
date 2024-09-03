@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from app.errors.error_handler import ErrorHandler
 from app.schemas import UserResponse, BalanceAddRequest, BalanceWithdrawRequest, BalanceTransferRequest, \
     TransferResponse
-from app.service import UserService
+from app.services.user_service import UserService
 import logging
 
 balance_router = APIRouter(route_class=ErrorHandler)

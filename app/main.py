@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException, Depends, APIRouter
+from fastapi import FastAPI, APIRouter
 
-from app.user import user_router
-from app.balance import balance_router
+from app.handlers.user import user_router
+from app.handlers.balance import balance_router
 
 app = FastAPI()
 

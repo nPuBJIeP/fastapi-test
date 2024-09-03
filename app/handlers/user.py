@@ -4,7 +4,7 @@ from app.entity import User
 from app.errors.error_handler import ErrorHandler
 import logging
 from app.schemas import UserResponse, CreateUserRequest
-from app.service import UserService
+from app.services.user_service import UserService
 
 
 user_router = APIRouter(route_class=ErrorHandler)
