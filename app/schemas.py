@@ -25,3 +25,8 @@ class CreateUserRequest(BaseModel):
 class UserResponse(BaseModel):
     user_id: int
     balance: float
+
+
+class TransferResponse(BaseModel):
+    sender: UserResponse
+    recipient: UserResponse

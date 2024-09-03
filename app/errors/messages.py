@@ -1,4 +1,3 @@
-class ErrorMessages:
-    USER_NOT_FOUND = "User not found"
-    USER_EXISTS = "User exists"
-    INCUFFICIENT_FUNDS = "Insufficient Funds"
+USER_NOT_FOUND = "User not found"
+USER_EXISTS = "User exists"
+INSUFFICIENT_FUNDS = "Insufficient Funds"

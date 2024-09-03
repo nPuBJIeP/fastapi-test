@@ -2,9 +2,8 @@ from fastapi import Depends, HTTPException
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.depends import get_mongodb_client
-from app.entity import User
-from app.schemas import BalanceAddRequest, BalanceWithdrawRequest, BalanceTransferRequest
-from app.errors.exceptions import NotFoundError, UserExistsError, InsufficientFunds, DataBaseError
+from app.entity import User, BalanceAdd, BalanceWithdraw, BalanceTransfer
+from app.errors.exceptions import UserNotFoundError, UserExistsError, InsufficientFundsError, DataBaseError
 
 
 class UserMongoRepository:
@@ -26,12 +25,11 @@ class UserMongoRepository:
 
     async def get_user(self, user_id: int):
         user = await self.db.balances.find_one({"user_id": user_id})
-        print(len(user))
         if user is None:
-            raise NotFoundError()
+            raise UserNotFoundError()
         return User(user_id=user['user_id'], balance=user['balance'])
 
-    async def add_balance(self, data: BalanceAddRequest):
+    async def add_balance(self, data: BalanceAdd):
         user = await self.db.balances.find_one({"user_id": data.user_id})
         if user:
             add_balance_user = await self.db.balances.update_one({"user_id": data.user_id},
@@ -39,29 +37,29 @@ class UserMongoRepository:
             upd_user = await self.db.balances.find_one({"user_id": data.user_id})
             return User(user_id=upd_user['user_id'], balance=upd_user['balance'])
         else:
-            raise NotFoundError()
+            raise UserNotFoundError()
 
-    async def withdraw_balance(self, data: BalanceWithdrawRequest):
+    async def withdraw_balance(self, data: BalanceWithdraw):
         user = await self.db.balances.find_one({'user_id': data.user_id})
 
         if user is None:
             raise UserExistsError()
         if user['balance'] < data.amount:
-            raise InsufficientFunds()
+            raise InsufficientFundsError()
         await self.db.balances.update_one({'user_id': data.user_id},
                                           {"$inc": {'balance': -data.amount}})
         upd_user = await self.db.balances.find_one({'user_id': data.user_id})
         return User(user_id=upd_user['user_id'], balance=upd_user['balance'])
 
-    async def transfer_balance(self, data: BalanceTransferRequest):
+    async def transfer_balance(self, data: BalanceTransfer):
         # users = await self.db.balances.find({"user_id": {"$in": [data.from_user_id, data.to_user_id]}})
         from_user = await self.db.balances.find_one({'user_id': data.from_user_id})
         to_user = await self.db.balances.find_one({'user_id': data.to_user_id})
         if from_user is None or to_user is None:
-            raise NotFoundError()
+            raise UserNotFoundError()
         if from_user['balance'] < data.amount:
-            raise InsufficientFunds()
-        # транзацакции доступны только с 4.0 версии монго, у меня 2.7, поэтому пытаемся сделать фейковую атомарность(отъебись<3)
+            raise InsufficientFundsError()
+
         try:
             await self.db.balances.update_one({'user_id': data.from_user_id}, {'$inc': {'balance': -data.amount}})
         except Exception:
