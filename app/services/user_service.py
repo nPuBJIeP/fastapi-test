@@ -1,8 +1,6 @@
 from fastapi import Depends
-
 from app.entity import User
-from app.repository import UserMongoRepository
-from app.schemas import BalanceAddRequest
+from app.repository.user_repository import UserMongoRepository
 
 
 class UserService:
@@ -12,10 +10,11 @@ class UserService:
         self.user_repo = user_repo
 
     async def create_user(self, user: User):
-        return await self.user_repo.create_user(user)
+        await self.user_repo.create_user(user)
+        return await self.user_repo.get_user(user.id)
 
     async def get_user(self, user_id: int):
         return await self.user_repo.get_user(user_id)
 
-    async def add_balance(self, data: BalanceAddRequest):
-        return await self.user_repo.add_balance(data)
+    async def delete_user(self, user_id: int) -> None:
+        return await self.user_repo.delete_user(user_id)

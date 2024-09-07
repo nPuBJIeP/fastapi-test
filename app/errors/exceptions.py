@@ -1,12 +1,29 @@
-from app.errors.messages import ErrorMessages
+from app.errors import messages
 
 
-class NotFoundError(Exception):
+class UserNotFoundError(Exception):
 
     def __init__(self):
-        self.message = ErrorMessages.USER_NOT_FOUND
+        self.message = messages.USER_NOT_FOUND
 
 
 class UserExistsError(Exception):
     def __init__(self):
-        self.message = ErrorMessages.USER_EXISTS
+        self.message = messages.USER_EXISTS
+
+
+class InsufficientFundsError(Exception):
+    def __init__(self):
+        self.message = messages.INSUFFICIENT_FUNDS
+
+
+class DataBaseError(Exception):
+    def __init__(self):
+        pass
+
+
+# class DuplicateKeyError(Exception):
+#     def __init__(self):
+#         self.message = messages.USER_EXISTS
+
+
