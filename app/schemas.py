@@ -1,20 +1,20 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class BalanceTransferRequest(BaseModel):
-    from_user_id: int
-    to_user_id: int
-    amount: float
+    sender_id: int
+    recipient_id: int
+    amount: float = Field(gt=0)
 
 
 class BalanceAddRequest(BaseModel):
     user_id: int
-    amount: float
+    amount: float = Field(gt=0)
 
 
 class BalanceWithdrawRequest(BaseModel):
     user_id: int
-    amount: float
+    amount: float = Field(gt=0)
 
 
 class CreateUserRequest(BaseModel):

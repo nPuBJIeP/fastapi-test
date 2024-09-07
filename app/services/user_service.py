@@ -1,5 +1,4 @@
 from fastapi import Depends
-
 from app.entity import User
 from app.repository.user_repository import UserMongoRepository
 
@@ -11,7 +10,8 @@ class UserService:
         self.user_repo = user_repo
 
     async def create_user(self, user: User):
-        return await self.user_repo.create_user(user)
+        await self.user_repo.create_user(user)
+        return await self.user_repo.get_user(user.id)
 
     async def get_user(self, user_id: int):
         return await self.user_repo.get_user(user_id)

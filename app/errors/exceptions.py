@@ -20,3 +20,10 @@ class InsufficientFundsError(Exception):
 class DataBaseError(Exception):
     def __init__(self):
         pass
+
+
+# class DuplicateKeyError(Exception):
+#     def __init__(self):
+#         self.message = messages.USER_EXISTS
+
+

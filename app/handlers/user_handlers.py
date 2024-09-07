@@ -11,10 +11,10 @@ logger = logging.getLogger("app")
 
 
 @user_router.post("/users", response_model=UserResponse)
-async def create_user(data: CreateUserRequest, user_service: UserService = Depends()):
-    new_user = User(user_id=data.user_id, balance=data.balance)
+async def create_user(user: CreateUserRequest, user_service: UserService = Depends()):
+    new_user = User(user_id=user.user_id, balance=user.balance)
     await user_service.create_user(new_user)
-    return UserResponse(user_id=data.user_id, balance=data.balance)
+    return UserResponse(user_id=user.user_id, balance=user.balance)
 
 
 @user_router.get("/users/{user_id}", response_model=UserResponse)
@@ -26,3 +26,4 @@ async def get_user(user_id: int, user_service: UserService = Depends()):
 @user_router.delete("/users/{user_id}", status_code=200)
 async def delete_user(user_id: int, user_service: UserService = Depends()):
     await user_service.delete_user(user_id)
+    return {'Success'}
